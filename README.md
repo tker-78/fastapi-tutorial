@@ -15,3 +15,14 @@ $ uvicorn main:app --reload
 
 ### BaseModel
 リクエストボディのデータモデルとして、BaseModelを使う。
+
+### バリデーション
+`Query`を用いて、下記の属性を指定する。
+- default
+- min_length
+- max_length
+- pattern
+- alias
+- deprecated
+- title
+- description

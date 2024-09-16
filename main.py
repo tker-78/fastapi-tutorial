@@ -1,8 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from enum import Enum
-from typing import Union
+from typing import Union, List
 
 from pydantic import BaseModel
+import re
 
 app = FastAPI()
 
@@ -51,9 +52,9 @@ fake_items_db = [
     {"item_name": "Baz"}
 ]
 
-@app.get("/items")
-async def read_item(skip: int = 0, limit: int = 10):
-    return fake_items_db[skip:skip+limit] # http://localhost:8000/items?skip=1&limit=2
+# @app.get("/items")
+# async def read_item(skip: int = 0, limit: int = 10):
+    # return fake_items_db[skip:skip+limit] # http://localhost:8000/items?skip=1&limit=2
 
 @app.get("/item/{item_id}")
 async def read_item(item_id: str, q: Union[str, None] = None, short: bool = False):
@@ -96,3 +97,23 @@ async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
     if q:
         item_dict.update({"q": q})
     return {"item_id": item_id, **item_dict}
+
+
+# クエリパラメータと文字列の検証
+@app.get("/items/")
+async def read_items(
+    tel: Union[str, None] = Query(
+        default="080-1234-5678", 
+        min_length=11,
+        max_length=13, 
+        pattern="^[0-9]{3}(-*)[0-9]{4}(-*)[0-9]{4}$", 
+        alias="item-query",
+        deprecated=True
+        )):
+    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if tel:
+        if "-" in tel:
+            tel = re.sub("-", "", tel)
+
+        results.update({"tel": tel})
+    return results
