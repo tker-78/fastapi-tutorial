@@ -26,3 +26,14 @@ $ uvicorn main:app --reload
 - deprecated
 - title
 - description
+
+
+`Path`を用いて、パスパラメータの属性を指定する。
+- le
+- ge
+- lt
+- gt
+
+
+`Path`の第一引数に`*`を指定することで、
+それ以降の引数がキーワード引数化する。

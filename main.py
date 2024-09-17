@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Path
 from enum import Enum
 from typing import Union, List
 
@@ -117,3 +117,17 @@ async def read_items(
 
         results.update({"tel": tel})
     return results
+
+
+# パスパラメータと数値の検証
+@app.get("/items/{item_id}")
+async def read_items(
+    *,
+    item_id: int = Path(title="The ID of the item to get", ge=1),
+    q: str
+):
+    results = {"item_id": item_id}
+    if q:
+        results.update({"q": q})
+    return results
+
