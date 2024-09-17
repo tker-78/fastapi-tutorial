@@ -6,6 +6,10 @@
 
 ## Tips
 
+```powershell
+[System.Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding("utf-8")
+```
+
 ### 実行方法
 ```bash
 $ pip install uvicorn
