@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query, Path, Body
 from enum import Enum
 from typing import Union, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import re
 
 app = FastAPI()
@@ -152,7 +152,22 @@ class User(BaseModel):
     full_name: Union[str, None] = None
 
 
+# @app.put("/items/{item_id}")
+# async def update_item(item_id: int, item: Item = Body(embed=True)):
+#     results = {"item_id": item_id, "item": item }
+#     return results
+
+# ボディ-フィールド
+
+class Item(BaseModel):
+    name: str
+    description: Union[str, None] = Field(
+        default=None, title="The description of the item", max_length=300
+    )
+    price: float = Field(gt=0, description="The price must be greater than 0")
+    tax: Union[float, None] = None
+
 @app.put("/items/{item_id}")
 async def update_item(item_id: int, item: Item = Body(embed=True)):
-    results = {"item_id": item_id, "item": item }
+    results = {"item_id": item_id, "item": Item}
     return results
