@@ -4,6 +4,8 @@ from typing import Union, List, Set
 
 from pydantic import BaseModel, Field, HttpUrl
 import re
+import json
+from pprint import pprint
 
 app = FastAPI()
 
@@ -169,7 +171,18 @@ class User(BaseModel):
 
 
 @app.put("/items/{item_id}")
-async def update_item(item_id: int, item: Item = Body(embed=True)):
+async def update_item(
+    item_id: int,
+    item: Item = Body(
+        embed=True,
+        examples=[
+            {
+                "name": "Foo",
+                "description": "A very nice Item",
+                "price": 35.4,
+                "tax": 3.2,
+            }
+        ])):
     results = {"item_id": item_id, "item": Item}
     return results
 
@@ -181,7 +194,7 @@ class Image(BaseModel):
     name: str
 
 class Item(BaseModel):
-    name: str
+    name: str = Field(examples=["Foo"])
     description: Union[str, None] = Field(
         default=None, title="The description of the item", max_length=300
     )
@@ -189,3 +202,20 @@ class Item(BaseModel):
     tax: Union[float, None] = None
     tags: Set[str] = set()
     image: Union[List[Image], None] = None
+    # スキーマの追加
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "name": "Foo",
+                    "description": "A very nice Item",
+                    "price": 35.4,
+                    "tax": 3.2,
+                }
+            ]
+        }
+    }
+
+@app.get("/json_schema")
+async def json_schema():
+    return json.dumps(Item.model_json_schema())
