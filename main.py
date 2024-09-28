@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path, Body
+from fastapi import FastAPI, Query, Path, Body, Cookie
 from enum import Enum
 from typing import Union, List, Set
 
@@ -7,6 +7,7 @@ import re
 import json
 from datetime import datetime, timedelta, time
 from uuid import UUID
+
 
 app = FastAPI()
 
@@ -103,23 +104,23 @@ async def create_item(item_id: int, item: Item, q: Union[str, None] = None):
 
 
 # クエリパラメータと文字列の検証
-@app.get("/items/")
-async def read_items(
-    tel: Union[str, None] = Query(
-        default="080-1234-5678", 
-        min_length=11,
-        max_length=13, 
-        pattern="^[0-9]{3}(-*)[0-9]{4}(-*)[0-9]{4}$", 
-        alias="item-query",
-        deprecated=True
-        )):
-    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
-    if tel:
-        if "-" in tel:
-            tel = re.sub("-", "", tel)
+# @app.get("/items/")
+# async def read_items(
+#     tel: Union[str, None] = Query(
+#         default="080-1234-5678", 
+#         min_length=11,
+#         max_length=13, 
+#         pattern="^[0-9]{3}(-*)[0-9]{4}(-*)[0-9]{4}$", 
+#         alias="item-query",
+#         deprecated=True
+#         )):
+#     results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+#     if tel:
+#         if "-" in tel:
+#             tel = re.sub("-", "", tel)
 
-        results.update({"tel": tel})
-    return results
+#         results.update({"tel": tel})
+#     return results
 
 
 # パスパラメータと数値の検証
@@ -241,3 +242,10 @@ async def read_items(
         "start_process": start_process,
         "duration": duration
     }
+
+# クッキーのパラメータ
+
+
+@app.get("/items/")
+async def read_items(ads_id: Union[str, None] = Cookie(default=None)):
+    return {"ads_id": ads_id} 
