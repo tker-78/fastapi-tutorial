@@ -262,3 +262,22 @@ class Cookies(BaseModel):
 @app.get("/items/")
 async def read_items(cookies: Annotated[Cookies, Cookie()]):
     return cookies
+
+
+# Header Parameter Models
+class CommonHeaders(BaseModel):
+    host: str
+    save_data: bool
+    if_modified_since: Union[str, None] = None
+    traceparent: Union[str, None] = None
+    x_tag: list[str] = []
+
+@app.get("/items/")
+async def read_items(headers: Annotated[CommonHeaders, Header()]):
+    return headers
+
+
+
+
+
+
