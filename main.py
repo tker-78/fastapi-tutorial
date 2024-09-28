@@ -5,7 +5,8 @@ from typing import Union, List, Set
 from pydantic import BaseModel, Field, HttpUrl
 import re
 import json
-from pprint import pprint
+from datetime import datetime, timedelta, time
+from uuid import UUID
 
 app = FastAPI()
 
@@ -122,16 +123,16 @@ async def read_items(
 
 
 # パスパラメータと数値の検証
-@app.get("/items/{item_id}")
-async def read_items(
-    *,
-    item_id: int = Path(title="The ID of the item to get", ge=1),
-    q: str
-):
-    results = {"item_id": item_id}
-    if q:
-        results.update({"q": q})
-    return results
+# @app.get("/items/{item_id}")
+# async def read_items(
+#     *,
+#     item_id: int = Path(title="The ID of the item to get", ge=1),
+#     q: str
+# ):
+#     results = {"item_id": item_id}
+#     if q:
+#         results.update({"q": q})
+#     return results
 
 # ボディ-複数のパラメータ
 # @app.put("/items/{item_id}")
@@ -219,3 +220,24 @@ class Item(BaseModel):
 @app.get("/json_schema")
 async def json_schema():
     return json.dumps(Item.model_json_schema())
+
+
+@app.put("/items/{item_id}")
+async def read_items(
+    item_id: UUID,
+    start_datetime: datetime = Body(),
+    end_datetime: datetime = Body(),
+    process_after: timedelta = Body(),
+    repeat_at :Union[time, None] = Body(default=None)
+):
+    start_process = start_datetime + process_after
+    duration = end_datetime - start_process
+    return {
+        "item_id": item_id,
+        "start_datetime": start_datetime,
+        "end_datetime": end_datetime,
+        "process_after": process_after,
+        "repeat_at": repeat_at,
+        "start_process": start_process,
+        "duration": duration
+    }
