@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query, Path, Body, Cookie, Header
 from enum import Enum
-from typing import Union, List, Set
+from typing import Union, List, Set, Annotated
 
 from pydantic import BaseModel, Field, HttpUrl
 import re
@@ -249,3 +249,16 @@ async def read_items(
 @app.get("/items/")
 async def read_items(user_agent: Union[str, None] = Header(default=None)): # user_agent -> User-Agentに自動的に変換される
     return {"User-Agent": user_agent}
+
+
+# Cookie Parameter Models
+class Cookies(BaseModel):
+    model_config= {"extra": "forbid"}
+    session_id: str
+    fatebook_tracker: Union[str, None] = None
+    googall_tracker: Union[str, None] = None
+
+
+@app.get("/items/")
+async def read_items(cookies: Annotated[Cookies, Cookie()]):
+    return cookies
