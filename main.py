@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Path, Body, Cookie
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header
 from enum import Enum
 from typing import Union, List, Set
 
@@ -247,5 +247,5 @@ async def read_items(
 
 
 @app.get("/items/")
-async def read_items(ads_id: Union[str, None] = Cookie(default=None)):
-    return {"ads_id": ads_id} 
+async def read_items(user_agent: Union[str, None] = Header(default=None)): # user_agent -> User-Agentに自動的に変換される
+    return {"User-Agent": user_agent}
